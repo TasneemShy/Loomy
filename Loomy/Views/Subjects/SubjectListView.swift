@@ -9,63 +9,64 @@ import SwiftUI
 import SwiftData
 
 struct SubjectListView: View {
-    // جلب المواد مرتبة حسب الاسم
-    @Query(sort: \Subject.name) private var subjects: [Subject]
+    // MARK: - Dependencies
     @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Subject.name) private var subjects: [Subject]
+    
+    // MARK: - State Properties
     @State private var isShowingAddSheet = false
 
+    // MARK: - Main Body
     var body: some View {
         NavigationStack {
             List {
                 ForEach(subjects) { subject in
                     NavigationLink(destination: SubjectDetailView(subject: subject)) {
-                        VStack(alignment: .leading, spacing: 5) {
-                            HStack {
-                                Text(subject.name)
-                                    .font(.headline)
-                                
-                                // نشان (Badge) للمستوى: جامعة أو مدرسة
-                                Text(subject.isUniversity ? "Uni" : "School")
-                                    .font(.caption2)
-                                    .fontWeight(.bold)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 2)
-                                    .background(subject.isUniversity ? Color.blue.opacity(0.1) : Color.orange.opacity(0.1))
-                                    .foregroundColor(subject.isUniversity ? .blue : .orange)
-                                    .clipShape(Capsule())
-                            }
-                            
-                            // عرض الأسعار الوجاهية (كمثال سريع في القائمة)
-                            Text("Offline Solo: \(subject.offlineSoloRate, specifier: "%.0f") ₪")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                        SubjectRow(subject: subject)
                     }
                 }
                 .onDelete(perform: deleteSubjects)
+                .listRowBackground(Color.theme.surface)
             }
             .navigationTitle("Subjects")
-            .toolbar {
-                Button(action: { isShowingAddSheet = true }) {
-                    Image(systemName: "plus")
-                }
-            }
-            .sheet(isPresented: $isShowingAddSheet) {
-                AddSubjectView()
-            }
-            .overlay {
-                // حل مشكلة الـ "Generic parameter C" بالتأكد من وجود حاوية
-                if subjects.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Subjects", systemImage: "book.closed")
-                    } description: {
-                        Text("Add the subjects you teach and set your 4 different rates.")
-                    }
-                }
+            .toolbar { toolbarContent }
+            .sheet(isPresented: $isShowingAddSheet) { AddSubjectView() }
+            .overlay { emptyStateOverlay }
+            .applyLoomyTheme()
+        }
+    }
+}
+
+// MARK: - Subviews
+extension SubjectListView {
+    
+    /// واجهة تظهر عندما لا توجد مواد مضافة
+    @ViewBuilder
+    private var emptyStateOverlay: some View {
+        if subjects.isEmpty {
+            ContentUnavailableView {
+                Label("No Subjects", systemImage: "book.closed")
+            } description: {
+                Text("Add the subjects you teach and set your 4 different rates.")
             }
         }
     }
+    
+    /// أزرار التحكم العلوي
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                isShowingAddSheet = true
+            } label: {
+                Image(systemName: "plus")
+            }
+        }
+    }
+}
 
+// MARK: - Logic & Helpers
+extension SubjectListView {
     private func deleteSubjects(offsets: IndexSet) {
         for index in offsets {
             modelContext.delete(subjects[index])
@@ -73,6 +74,45 @@ struct SubjectListView: View {
     }
 }
 
+// MARK: - SubjectRow Component
+struct SubjectRow: View {
+    let subject: Subject
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack {
+                Text(subject.name)
+                    .font(.headline)
+                
+                levelBadge
+            }
+            
+            ratesSummaryText
+        }
+        .padding(.vertical, 2)
+    }
+    
+    // وسم مستوى المادة (Uni/School)
+    private var levelBadge: some View {
+        Text(subject.isUniversity ? "Uni" : "School")
+            .font(.caption2)
+            .fontWeight(.bold)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 2)
+            .background(subject.isUniversity ? Color.theme.uni.opacity(0.1) : Color.theme.school.opacity(0.1))
+            .foregroundColor(subject.isUniversity ? Color.theme.uni : Color.theme.school)
+            .clipShape(Capsule())
+    }
+    
+    // نص ملخص الأسعار الأربعة
+    private var ratesSummaryText: some View {
+        Text("Solo (\(subject.offlineSoloRate, specifier: "%.0f")/\(subject.onlineSoloRate, specifier: "%.0f"))  Group (\(subject.offlineGroupRate, specifier: "%.0f")/\(subject.onlineGroupRate, specifier: "%.0f")) ₪")
+            .font(.caption2)
+            .foregroundStyle(Color.theme.secondaryText)
+    }
+}
+
+// MARK: - Preview
 #Preview {
     SubjectListView()
 }

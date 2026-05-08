@@ -31,4 +31,9 @@ extension Array where Element == Attendance {
     var totalActualEarnings: Double {
         self.reduce(0) { $0 + $1.amountPaid }
     }
+    
+    // المبلغ الإجمالي المفترض (لو الكل دفع)
+        var totalExpectedEarnings: Double {
+            self.reduce(0) { $0 + $1.agreedRate }
+        }
 }

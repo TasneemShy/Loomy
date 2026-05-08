@@ -56,21 +56,20 @@ extension EditPaymentView {
     private var financialDetailsSection: some View {
         Section("Financial Details") {
             HStack {
-                Text("Agreed Amount")
-                Spacer()
-                TextField("Amount", value: $tempAgreedRate, format: .number)
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.trailing)
-                    .bold()
-            }
-            
-            HStack {
-                Text("Amount Paid")
+                Text("Paid")
                 Spacer()
                 TextField("Paid", value: $tempAmountPaid, format: .number)
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
                     .foregroundColor(.blue)
+            }
+            HStack {
+                Text("Price")
+                Spacer()
+                TextField("Amount", value: $tempAgreedRate, format: .number)
+                    .keyboardType(.decimalPad)
+                    .multilineTextAlignment(.trailing)
+                    .bold()
             }
         }
     }

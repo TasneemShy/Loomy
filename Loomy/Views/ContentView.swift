@@ -10,20 +10,32 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         TabView {
-            StudentListView() // بينادي شاشة الطلاب
+            // 1. الشاشة الجديدة (الداشبورد)
+            DashboardView()
+                .tabItem {
+                    Label("Dashboard", systemImage: "chart.pie.fill")
+                }
+
+            // 2. شاشة الطلاب
+            StudentListView()
                 .tabItem {
                     Label("Students", systemImage: "person.2")
                 }
 
-            SubjectListView() // بينادي شاشة المواد
+            // 3. شاشة الحصص
+            SessionsListView()
+                .tabItem {
+                    Label("Sessions", systemImage: "calendar")
+                }
+
+            // 4. شاشة المواد
+            SubjectListView()
                 .tabItem {
                     Label("Subjects", systemImage: "book")
                 }
             
-            Text("Sessions Coming Soon") // مؤقت للشاشة الثالثة
-                .tabItem {
-                    Label("Sessions", systemImage: "calendar")
-                }
+            SettingsView() // ⚙️ الإضافة الجديدة
+                .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }
     }
 }
