@@ -12,6 +12,8 @@ struct AddSubjectView: View {
     // MARK: - Dependencies
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    
+    @AppStorage("selectedCurrency") private var selectedCurrency: Currency = .ils
 
     // MARK: - State Properties
     @State private var name = ""
@@ -105,7 +107,7 @@ extension AddSubjectView {
                 .multilineTextAlignment(.trailing)
                 .font(.subheadline.bold())
             
-            Text("$")
+            Text("\(selectedCurrency.rawValue)")
                 .font(.caption2)
                 .foregroundStyle(Color.theme.secondaryText)
         }

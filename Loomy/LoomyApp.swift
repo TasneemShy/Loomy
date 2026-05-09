@@ -12,6 +12,11 @@ import SwiftData
 struct LoomyApp: App {
     @AppStorage("appTheme") private var appTheme = "System"
     
+    // Check the settings
+    @AppStorage("isFaceIDEnabled") private var isFaceIDEnabled = false
+    // Temporary state to track if the current session is unlocked
+    @State private var isSessionUnlocked = false
+    
     // تحويل النص (String) لنوع بيفهمه النظام
     // تحويل النص (String) لنوع بيفهمه النظام
         private func getColorScheme() -> ColorScheme? {
@@ -33,8 +38,12 @@ struct LoomyApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .preferredColorScheme(getColorScheme())
+            if isFaceIDEnabled && !isSessionUnlocked {
+                            LockScreenView(isUnlocked: $isSessionUnlocked)
+            } else {
+                ContentView()
+                    .preferredColorScheme(getColorScheme())
+            }
         }
         .modelContainer(for: [Subject.self, Student.self, Session.self, Attendance.self])
     }

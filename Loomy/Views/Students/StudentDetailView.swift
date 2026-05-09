@@ -13,6 +13,8 @@ struct StudentDetailView: View {
     let student: Student
     @Environment(\.modelContext) private var modelContext
     
+    @AppStorage("selectedCurrency") private var selectedCurrency: Currency = .ils
+    
     // MARK: - State Properties
     @State private var selectedAttendance: Attendance?
     @State private var isShowingAddSession = false
@@ -46,7 +48,7 @@ extension StudentDetailView {
                 Text("Current Balance")
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text("\(student.totalPaid, specifier: "%.0f") / \(student.totalAgreed, specifier: "%.0f") ₪")
+                    Text("\(student.totalPaid, specifier: "%.0f") / \(student.totalAgreed, specifier: "%.0f") \(selectedCurrency.rawValue)")
                         .font(.subheadline)
                         .bold()
                     
@@ -92,10 +94,10 @@ extension StudentDetailView {
     private var balanceBadge: some View {
         Group {
             if student.balance < 0 {
-                Text("Need: \(abs(student.balance), specifier: "%.0f") ₪")
+                Text("Need: \(abs(student.balance), specifier: "%.0f") \(selectedCurrency.rawValue)")
                     .foregroundColor(.red)
             } else if student.balance > 0 {
-                Text("Extra: \(student.balance, specifier: "%.0f") ₪")
+                Text("Extra: \(student.balance, specifier: "%.0f") \(selectedCurrency.rawValue)")
                     .foregroundColor(.green)
             } else {
                 Text("Settled")
@@ -221,7 +223,7 @@ extension StudentDetailView {
                 .bold()
                 .foregroundColor(record.amountPaid >= record.agreedRate ? Color.theme.profit : Color.theme.debt)
             Text("/")
-            Text("\(record.agreedRate, specifier: "%.0f") ₪").bold()
+            Text("\(record.agreedRate, specifier: "%.0f") \(selectedCurrency.rawValue)").bold()
         }
         .font(.caption)
         .foregroundStyle(Color.theme.secondaryText)

@@ -77,6 +77,7 @@ extension SubjectListView {
 // MARK: - SubjectRow Component
 struct SubjectRow: View {
     let subject: Subject
+    @AppStorage("selectedCurrency") private var selectedCurrency: Currency = .ils
     
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
@@ -106,7 +107,7 @@ struct SubjectRow: View {
     
     // نص ملخص الأسعار الأربعة
     private var ratesSummaryText: some View {
-        Text("Solo (\(subject.offlineSoloRate, specifier: "%.0f")/\(subject.onlineSoloRate, specifier: "%.0f"))  Group (\(subject.offlineGroupRate, specifier: "%.0f")/\(subject.onlineGroupRate, specifier: "%.0f")) ₪")
+        Text("Solo (\(subject.offlineSoloRate, specifier: "%.0f")/\(subject.onlineSoloRate, specifier: "%.0f"))  Group (\(subject.offlineGroupRate, specifier: "%.0f")/\(subject.onlineGroupRate, specifier: "%.0f")) \(selectedCurrency.rawValue)")
             .font(.caption2)
             .foregroundStyle(Color.theme.secondaryText)
     }

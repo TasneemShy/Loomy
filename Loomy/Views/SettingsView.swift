@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
+import LocalAuthentication
 
 struct SettingsView: View {
     // MARK: - Persistent Settings (AppStorage)
-    @AppStorage("selectedCurrency") private var selectedCurrency = Currency.ils.rawValue
+    @AppStorage("selectedCurrency") private var selectedCurrency: Currency = .ils
     @AppStorage("appTheme") private var appTheme = AppTheme.system.rawValue
     @AppStorage("isFaceIDEnabled") private var isFaceIDEnabled = false
     
@@ -19,10 +20,10 @@ struct SettingsView: View {
             Form {
                 // 1. قسم التخصيص (Preferences)
                 Section("Preferences") {
-                    Picker("Default Currency", selection: $selectedCurrency) {
+                    Picker("Currency", selection: $selectedCurrency) {
+                        // Loops through all your enum cases automatically
                         ForEach(Currency.allCases, id: \.self) { currency in
-                            Text("\(currency.rawValue) (\(currency == .ils ? "Shekel" : currency == .jod ? "Dinar" : "Dollar"))")
-                                .tag(currency.rawValue)
+                            Text("\(currency.rawValue) (\(currency.name))").tag(currency)
                         }
                     }
                     
@@ -33,11 +34,19 @@ struct SettingsView: View {
                     }
                 }
                 .listRowBackground(Color.theme.surface)
-                                   
+                
                 // 2. قسم الأمان (Security)
                 Section("Security") {
                     Toggle("Enable Face ID", isOn: $isFaceIDEnabled)
                         .tint(.blue)
+                        .onChange(of: isFaceIDEnabled) { oldValue, newValue in
+                            // Logic goes here
+                            if newValue == true {
+                                verifyFaceIDToEnable()
+                            }
+                        }
+                    
+                    // View (Text) goes here, OUTSIDE the .onChange
                     if isFaceIDEnabled {
                         Text("App will require Face ID to unlock.")
                             .font(.caption2)
@@ -74,13 +83,33 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
             .scrollContentBackground(.hidden)
-            .applyLoomyTheme()
+            // .applyLoomyTheme() // uncomment this if your custom modifier is ready
         }
     }
     
     // MARK: - Logic
-    private func exportBackup() {
+    func exportBackup() {
         // هنا رح نبرمج لاحقاً كيف نطلع ملف JSON فيه كل البيانات
         print("Exporting backup...")
+    }
+    
+    // The authentication function
+    func verifyFaceIDToEnable() {
+        let context = LAContext()
+        var error: NSError?
+        
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Authenticate to enable Face ID for Loomy") { success, _ in
+                DispatchQueue.main.async {
+                    if !success {
+                        // If they cancel or fail, flip the toggle back off!
+                        isFaceIDEnabled = false
+                    }
+                }
+            }
+        } else {
+            // No Face ID available on device
+            isFaceIDEnabled = false
+        }
     }
 }
