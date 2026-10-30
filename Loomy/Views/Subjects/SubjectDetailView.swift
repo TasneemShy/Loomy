@@ -12,6 +12,8 @@ struct SubjectDetailView: View {
     // MARK: - Dependencies
     @Bindable var subject: Subject
     @Environment(\.dismiss) private var dismiss
+    
+    @AppStorage("selectedCurrency") private var selectedCurrency: Currency = .ils
 
     // MARK: - Main Body
     var body: some View {
@@ -27,7 +29,6 @@ struct SubjectDetailView: View {
 
 // MARK: - Subviews
 extension SubjectDetailView {
-    
     /// القسم الأول: معلومات المادة الأساسية
     private var subjectInfoSection: some View {
         Section("Subject Info") {
@@ -41,7 +42,7 @@ extension SubjectDetailView {
     
     /// القسم الثاني: تعديل أسعار الوجاهي (Offline)
     private var offlineRatesSection: some View {
-        Section("Offline Rates (₪)") {
+        Section("Offline Rates (\(selectedCurrency.rawValue))") {
             rateRow(label: "Solo:", value: $subject.offlineSoloRate)
             rateRow(label: "Group:", value: $subject.offlineGroupRate)
         }.listRowBackground(Color.theme.surface)
@@ -49,7 +50,7 @@ extension SubjectDetailView {
     
     /// القسم الثالث: تعديل أسعار الأونلاين (Online)
     private var onlineRatesSection: some View {
-        Section("Online Rates (₪)") {
+        Section("Online Rates (\(selectedCurrency.rawValue))") {
             rateRow(label: "Solo:", value: $subject.onlineSoloRate)
             rateRow(label: "Group:", value: $subject.onlineGroupRate)
         }.listRowBackground(Color.theme.surface)

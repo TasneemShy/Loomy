@@ -10,14 +10,18 @@ import Foundation
 // MARK: - Global App Settings
 enum Currency: String, CaseIterable, Codable {
     case ils = "₪"
-    case jod = "JD"
     case usd = "$"
+    case eur = "€"
+    case gbp = "£"
+    case jod = "JD"
     
     var name: String {
         switch self {
-        case .ils: return "Shekel"
-        case .jod: return "Dinar"
-        case .usd: return "Dollar"
+        case .ils: return "ILS"
+        case .usd: return "USD"
+        case .eur: return "EUR"
+        case .gbp: return "GBP"
+        case .jod: return "JOD"
         }
     }
 }

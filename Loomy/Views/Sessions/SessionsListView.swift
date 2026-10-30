@@ -17,7 +17,7 @@ struct SessionsListView: View {
     @State private var isShowingAddSheet = false
     @State private var sortOption: SessionSortOption = .date
     @State private var selectedDate = Date() // التاريخ المختار
-
+    
     // MARK: - Computed Properties
     private var displayedSessions: [Session] {
         // المرحلة الأولى: التصفية حسب التاريخ (Filtering)
@@ -39,44 +39,45 @@ struct SessionsListView: View {
         
         return result
     }
-
+    
     // MARK: - Main Body
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // 1. التقويم الذكي (مع النقاط المؤشرة)
-                // استبدلنا DatePicker بـ LoomyCalendar اللي عملناه
+            // شلنا الـ VStack واستخدمنا الـ List عشان تحضن الشاشة كلها
+            List {
+                // 1. التقويم الذكي (صار جوا الـ List عشان ينزل ويطلع مع السكرول)
                 LoomyCalendar(selectedDate: $selectedDate)
-                    .frame(height: 500) // طول مناسب للرؤية
                     .background(Color.theme.surface)
                     .cornerRadius(16)
-                    .padding(.horizontal)
-                    .padding(.top, 10)
+                // إخفاء خصائص سطر القائمة عشان يبين كأنه Header مستقل
+                    .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 0, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 
                 // 2. قائمة الحصص
-                List {
-                    if displayedSessions.isEmpty {
-                        // حالة لا يوجد حصص (Empty State)
-                        contentUnavailableView
-                    } else {
-                        // عرض الحصص المفلترة
-                        Section("Sessions for \(selectedDate.formatted(date: .abbreviated, time: .omitted))") {
-                            ForEach(displayedSessions) { session in
-                                NavigationLink(destination: SessionDetailView(session: session)) {
-                                    SessionRow(session: session)
-                                }
+                if displayedSessions.isEmpty {
+                    // حالة لا يوجد حصص (Empty State)
+                    contentUnavailableView
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                } else {
+                    // عرض الحصص المفلترة
+                    Section("Sessions for \(selectedDate.formatted(date: .abbreviated, time: .omitted))") {
+                        ForEach(displayedSessions) { session in
+                            NavigationLink(destination: SessionDetailView(session: session)) {
+                                SessionRow(session: session)
                             }
-                            .onDelete(perform: deleteSessions)
-                            .listRowBackground(Color.theme.surface)
                         }
+                        .onDelete(perform: deleteSessions) // الحذف رح يضل شغال 100%
+                        .listRowBackground(Color.theme.surface)
                     }
                 }
-                .applyLoomyTheme() // تطبيق الثيم الموحد (الخلفية والسطور)
             }
+            .applyLoomyTheme() // تطبيق الثيم الموحد
             .navigationTitle("Schedule")
             .background(Color.theme.background) // خلفية الصفحة كاملة
             .toolbar { toolbarContent }
-            .sheet(isPresented: $isShowingAddSheet) { AddSessionView() }
+            .sheet(isPresented: $isShowingAddSheet) { AddSessionView(initialDate: selectedDate) }
         }
     }
 }

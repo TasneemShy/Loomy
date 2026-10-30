@@ -18,7 +18,7 @@ struct DashboardView: View {
     @Query private var subjects: [Subject]
     
     // ربط العملة بالإعدادات
-    @AppStorage("selectedCurrency") private var selectedCurrency = Currency.ils.rawValue
+    @AppStorage("selectedCurrency") private var selectedCurrency: Currency = .ils
     
     // MARK: - Main Body
     var body: some View {
@@ -202,7 +202,7 @@ extension DashboardView {
     private func heroCard(title: String, value: Double, icon: String, color: Color) -> some View {
         VStack(alignment: .center, spacing: 8) {
             // تم ربط العملة هنا 👇
-            Text("\(value, specifier: "%.0f") \(selectedCurrency)")
+            Text("\(value, specifier: "%.0f") \(selectedCurrency.rawValue)")
                 .font(.system(size: 32, weight: .black, design: .rounded))
                 .minimumScaleFactor(0.5)
             
@@ -240,7 +240,7 @@ extension DashboardView {
             }
             
             // تم ربط العملة هنا 👇
-            Text("\(value, specifier: "%.0f") \(selectedCurrency)")
+            Text("\(value, specifier: "%.0f") \(selectedCurrency.rawValue)")
                 .font(.system(.title2, design: .rounded))
                 .fontWeight(.bold)
                 .foregroundStyle(color)

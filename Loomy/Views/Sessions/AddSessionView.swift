@@ -16,9 +16,13 @@ struct AddSessionView: View {
     @Query(sort: \Subject.name) private var subjects: [Subject]
     @Query(sort: \Student.name) private var allStudents: [Student]
     
+    var initialDate: Date = Date()
+    
     // MARK: - State Properties
     @State private var selectedSubject: Subject?
-    @State private var date = Date()
+    
+    @State private var date: Date
+    
     @State private var hours = 1.0
     @State private var isOnline = false
     
@@ -28,6 +32,12 @@ struct AddSessionView: View {
     
     var preSelectedStudent: Student? = nil
 
+    // في ملف AddSessionView.swift
+    init(initialDate: Date = Date(), preSelectedStudent: Student? = nil) {
+        _date = State(initialValue: initialDate)
+        self.preSelectedStudent = preSelectedStudent
+    }
+    
     // MARK: - Main Body
     var body: some View {
         NavigationStack {

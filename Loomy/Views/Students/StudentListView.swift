@@ -159,6 +159,8 @@ enum SortOption: String, CaseIterable {
 struct StudentRow: View {
     let student: Student
     
+    @AppStorage("selectedCurrency") private var selectedCurrency: Currency = .ils
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
@@ -211,7 +213,7 @@ struct StudentRow: View {
     /// ملخص الرصيد المالي وحالة الدفع
     private var financialSummaryView: some View {
         VStack(alignment: .trailing) {
-            Text("\(student.totalBalance, specifier: "%.0f") ₪")
+            Text("\(student.totalBalance, specifier: "%.0f") \(selectedCurrency.rawValue)")
                 .font(.subheadline)
                 .bold()
                 .foregroundColor(student.totalBalance >= 0 ? Color.theme.profit : Color.theme.debt)
@@ -220,7 +222,7 @@ struct StudentRow: View {
                 Text("\(student.totalPaid, specifier: "%.0f")")
                 Text("/")
                 Text("\(student.totalAgreed, specifier: "%.0f")")
-                Text("₪")
+                Text("\(selectedCurrency.rawValue)")
             }
             .font(.caption)
             .foregroundStyle(Color.theme.secondaryText)

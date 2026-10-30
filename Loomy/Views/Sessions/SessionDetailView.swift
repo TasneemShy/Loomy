@@ -13,6 +13,8 @@ struct SessionDetailView: View {
     @Bindable var session: Session
     @Environment(\.modelContext) private var modelContext
     
+    @AppStorage("selectedCurrency") private var selectedCurrency: Currency = .ils
+    
     // MARK: - State Properties
     @State private var selectedAttendance: Attendance?
 
@@ -88,7 +90,7 @@ extension SessionDetailView {
                     Text(record.student?.name ?? "Unknown Student")
                         .font(.headline)
                     
-                    Text(record.amountPaid >= record.agreedRate ? "Paid in Full" : "Pending: \(record.agreedRate - record.amountPaid, specifier: "%.0f") ₪")
+                    Text(record.amountPaid >= record.agreedRate ? "Paid in Full" : "Pending: \(record.agreedRate - record.amountPaid, specifier: "%.0f") \(selectedCurrency.rawValue)")
                         .font(.caption2)
                         .foregroundColor(record.amountPaid >= record.agreedRate ? .green : .red)
                 }
@@ -96,7 +98,7 @@ extension SessionDetailView {
                 Spacer()
                 
                 VStack(alignment: .trailing) {
-                    Text("\(record.amountPaid, specifier: "%.0f") / \(record.agreedRate, specifier: "%.0f") ₪")
+                    Text("\(record.amountPaid, specifier: "%.0f") / \(record.agreedRate, specifier: "%.0f") \(selectedCurrency.rawValue)")
                         .font(.subheadline)
                     Image(systemName: "chevron.right")
                         .font(.caption2)

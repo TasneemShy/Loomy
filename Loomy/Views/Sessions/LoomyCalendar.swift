@@ -18,15 +18,9 @@ struct LoomyCalendar: UIViewRepresentable {
         let calendarView = UICalendarView()
         calendarView.calendar = Calendar(identifier: .gregorian)
         
-        // 1. منع التقويم من اقتراح طوله الخاص
-        calendarView.translatesAutoresizingMaskIntoConstraints = false
-        
-        // 2. إجبار الطول على رقم معين (مثلاً 300 أو 320)
-        // هذا السطر هو اللي بضغط الصفوف غصب عنها
-        calendarView.heightAnchor.constraint(equalToConstant: 320).isActive = true
-        
         calendarView.delegate = context.coordinator
         let selection = UICalendarSelectionSingleDate(delegate: context.coordinator)
+        
         calendarView.selectionBehavior = selection
         calendarView.tintColor = UIColor(Color.theme.accent)
         
